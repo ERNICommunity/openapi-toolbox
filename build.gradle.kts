@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "1.9.23"
     id("org.openapi.generator") version "7.8.0"
+//    id("org.frege-lang") version "0.8"
 }
 
 group = "erni.dev"
@@ -26,16 +27,19 @@ openApiGenerate {
 
     generatorName.set("java")
     inputSpec.set("$rootDir/src/main/openapi/hiking-routes-api.yml")
-    outputDir.set("$buildDir/generated-java")
-//    library.set("resttemplate")
-    library.set("native")
+    outputDir.set("${layout.buildDirectory}/generated-java")
+    library.set("resttemplate")
     templateResourcePath.set("$rootDir/src/main/resources")
-
+    additionalProperties.put("useOneOfInterfaces", true)
+    additionalProperties.put("generateBuilders", true)
 
     apiPackage.set("erni.dev.openapitoolbox.api")
     invokerPackage.set("erni.dev.openapitoolbox.invoker")
     modelPackage.set("erni.dev.openapitoolbox.model")
     configOptions.put("dateLibrary", "java8")
+    configOptions.put("useOneOfInterfaces", "true")
+    configOptions.put("generateBuilders", "true")
+    configOptions.put("useJakartaEE", "true")
 }
 
 dependencies {

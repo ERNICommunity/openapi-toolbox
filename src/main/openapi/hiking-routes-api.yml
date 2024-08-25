@@ -1,38 +1,12 @@
 openapi: 3.0.3
 info:
   title: Hiking Routes Inventory API
-  description: An API for managing and retrieving information about hiking routes.
   version: 1.0.0
-servers:
-  - url: https://api.hikingroutes.com/v1
-    description: Production server
-  - url: https://staging.api.hikingroutes.com/v1
-    description: Staging server
 
 paths:
   /routes:
     get:
       summary: Get a list of hiking routes
-      description: Retrieve a list of all available hiking routes with basic details.
-      parameters:
-        - in: query
-          name: difficulty
-          schema:
-            type: string
-            enum: [easy, moderate, hard]
-          description: Filter routes by difficulty level
-        - in: query
-          name: length_min
-          schema:
-            type: number
-            format: float
-          description: Filter routes by minimum length (in kilometers)
-        - in: query
-          name: length_max
-          schema:
-            type: number
-            format: float
-          description: Filter routes by maximum length (in kilometers)
       responses:
         '200':
           description: A list of hiking routes
@@ -52,28 +26,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/NewRoute'
+              $ref: '#/components/schemas/Route'
       responses:
         '201':
           description: The route was successfully created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Route'
-        '400':
-          description: Invalid input data
 
   /routes/{routeId}:
     get:
       summary: Get details of a specific route
-      description: Retrieve detailed information about a specific hiking route by its ID.
       parameters:
         - in: path
           name: routeId
           required: true
           schema:
             type: string
-          description: The ID of the hiking route
       responses:
         '200':
           description: Details of the hiking route
@@ -81,50 +47,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Route'
-        '404':
-          description: Route not found
-    put:
-      summary: Update an existing hiking route
-      description: Update the details of an existing hiking route by its ID.
-      parameters:
-        - in: path
-          name: routeId
-          required: true
-          schema:
-            type: string
-          description: The ID of the hiking route
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/NewRoute'
-      responses:
-        '200':
-          description: The route was successfully updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Route'
-        '404':
-          description: Route not found
-        '400':
-          description: Invalid input data
-    delete:
-      summary: Delete a hiking route
-      description: Delete a hiking route from the inventory by its ID.
-      parameters:
-        - in: path
-          name: routeId
-          required: true
-          schema:
-            type: string
-          description: The ID of the hiking route
-      responses:
-        '204':
-          description: The route was successfully deleted
-        '404':
-          description: Route not found
 
 components:
   schemas:
@@ -138,57 +60,30 @@ components:
         name:
           type: string
           description: The name of the hiking route
-          example: "Sunset Trail"
-        difficulty:
-          type: string
-          description: The difficulty level of the route
-          enum: [easy, moderate, hard]
-          example: "moderate"
-        length:
-          type: number
-          format: float
-          description: The length of the route in kilometers
-          example: 7.5
-        elevation_gain:
-          type: number
-          format: float
-          description: The total elevation gain of the route in meters
-          example: 500
-        description:
-          type: string
-          description: A detailed description of the route
-          example: "A scenic trail with a moderate climb and beautiful sunset views."
-        location:
-          type: string
-          description: The general location of the route
-          example: "Yosemite National Park, California"
-        created_at:
-          type: string
-          format: date-time
-          description: The date and time when the route was added
-        updated_at:
-          type: string
-          format: date-time
-          description: The date and time when the route was last updated
 
-        segmente:
+        routeSegments:
           type: array
           items:
-            $ref: "#/components/schemas/SegmentBase"
+            $ref: "#/components/schemas/RouteSegment"
 
-    SegmentBase:
+    RouteSegment:
+      type: object
+      discriminator:
+        propertyName: discriminator
+      oneOf:
+        - $ref: "#/components/schemas/HikingSegment"
+        - $ref: "#/components/schemas/MountainRideSegment"
+
+    RouteSegmentBase:
       type: object
       discriminator:
         propertyName: discriminator
         mapping:
-          WANDERSTRECKE: "#/components/schemas/Wanderstrecke"
-          SEILBAHNSTRECKE: "#/components/schemas/Seilbahnstrecke"
+          HIKINGSEGMENT: "#/components/schemas/HikingSegment"
+          MOUNTAINRIDESEGMENT: "#/components/schemas/MountainRideSegment"
       properties:
         discriminator:
           type: string
-          enum:
-            - WANDERSTRECKE
-            - SEILBAHNSTRECKE
           nullable: false
           readOnly: true
         von:
@@ -208,60 +103,42 @@ components:
           minimum: 0
           exclusiveMinimum: true
 
-    Wanderstrecke:
+    HikingSegment:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/RouteSegmentBase"
+        - $ref: "#/components/schemas/HikingSegmentDetails"
+
+    HikingSegmentDetails:
       type: object
       properties:
-        höhendifferenz:
+        elevationDifference:
           type: number
-        schwierigkeitsgrad:
+        difficulty:
           type: string
           enum:
-            - LEICHT
-            - MITTEL
-            - SCHWER
+            - EASY
+            - MEDIUM
+            - HARD
       required:
-        - höhendifferenz
-        - schwierigkeitsgrad
+        - elevationDifference
+        - difficulty
 
-    Seilbahnstrecke:
+    MountainRideSegment:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/RouteSegmentBase"
+        - $ref: "#/components/schemas/HikingSegmentDetails"
+
+    MountainRideSegmentDetails:
       type: object
       properties:
-        höhendifferenz:
+        elevationDifference:
           type: number
-        kostenInRappen:
-          type: integer
-        fahrplanUrl:
+        freeOfCharge:
+          type: boolean
+        timeTableUrl:
           type: string
           format: uri
       required:
-        - höhendifferenz
-
-    NewRoute:
-      type: object
-      required:
-        - name
-        - difficulty
-        - length
-        - location
-      properties:
-        name:
-          type: string
-          description: The name of the hiking route
-        difficulty:
-          type: string
-          description: The difficulty level of the route
-          enum: [easy, moderate, hard]
-        length:
-          type: number
-          format: float
-          description: The length of the route in kilometers
-        elevation_gain:
-          type: number
-          format: float
-          description: The total elevation gain of the route in meters
-        description:
-          type: string
-          description: A detailed description of the route
-        location:
-          type: string
-          description: The general location of the route
+        - elevationDifference
