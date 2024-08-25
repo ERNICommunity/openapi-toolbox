@@ -27,7 +27,8 @@ openApiGenerate {
 
     generatorName.set("java")
     inputSpec.set("$rootDir/src/main/openapi/hiking-routes-api.yml")
-    outputDir.set("${layout.buildDirectory}/generated-java")
+    outputDir.set("$buildDir/generated-java")
+//    ${layout.buildDirectory}
     library.set("resttemplate")
     templateResourcePath.set("$rootDir/src/main/resources")
     additionalProperties.put("useOneOfInterfaces", true)
@@ -39,16 +40,18 @@ openApiGenerate {
     configOptions.put("dateLibrary", "java8")
     configOptions.put("useOneOfInterfaces", "true")
     configOptions.put("generateBuilders", "true")
-    configOptions.put("useJakartaEE", "true")
+    configOptions.put("useJakartaEe", "true")
 }
 
 dependencies {
 
     val jackson_version = "2.17.1"
-    val jakarta_annotation_version = "1.3.5"
+//    val jakarta_annotation_version = "1.3.5"
+    val jakarta_annotation_version = "2.1.1"
     val junit_version = "5.10.2"
     val findbugs_version = "3.0.2"
     val openapitools_jackson_databind_nullable_version = "0.2.1"
+    val spring_web_version = "5.3.33"
 
     implementation("com.fasterxml.jackson.core:jackson-core:$jackson_version")
     implementation("com.google.code.findbugs:jsr305:$findbugs_version")
@@ -57,6 +60,17 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version")
     implementation("org.openapitools:jackson-databind-nullable:$openapitools_jackson_databind_nullable_version")
     implementation("jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version")
+
+    implementation("org.springframework:spring-web:$spring_web_version")
+    implementation("org.springframework:spring-context:$spring_web_version")
+
+    implementation("org.openapi4j:openapi-schema-validator:1.0.7")
+    implementation("org.openapi4j:openapi-parser:1.0.7")
+
+
+    testImplementation("net.jqwik:jqwik:1.9.0")
+    testImplementation("org.assertj:assertj-core:3.23.1")
+
     implementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
 }

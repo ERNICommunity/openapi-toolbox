@@ -60,11 +60,18 @@ components:
         name:
           type: string
           description: The name of the hiking route
+        mostDifficultSegment:
+          $ref: "#/components/schemas/RouteSegment"
 
         routeSegments:
           type: array
           items:
             $ref: "#/components/schemas/RouteSegment"
+
+      required:
+        - id
+        - name
+        - routeSegments
 
     RouteSegment:
       type: object
@@ -73,6 +80,7 @@ components:
       oneOf:
         - $ref: "#/components/schemas/HikingSegment"
         - $ref: "#/components/schemas/MountainRideSegment"
+      nullable: false
 
     RouteSegmentBase:
       type: object
@@ -86,28 +94,34 @@ components:
           type: string
           nullable: false
           readOnly: true
-        von:
+        from:
           type: string
           nullable: false
           minLength: 1
-        nach:
+        to:
           type: string
           nullable: false
           minLength: 1
-        distanz:
+        distance:
           type: integer
           minimum: 0
           exclusiveMinimum: false
-        durchschnittlicheDauerInSekunden:
+        averageTripTime:
           type: integer
           minimum: 0
           exclusiveMinimum: true
+      nullable: false
+      required:
+        - discriminator # error if missing
+        - from
+        - to
 
     HikingSegment:
       type: object
       allOf:
         - $ref: "#/components/schemas/RouteSegmentBase"
         - $ref: "#/components/schemas/HikingSegmentDetails"
+      nullable: false
 
     HikingSegmentDetails:
       type: object
@@ -123,12 +137,14 @@ components:
       required:
         - elevationDifference
         - difficulty
+      nullable: false
 
     MountainRideSegment:
       type: object
       allOf:
         - $ref: "#/components/schemas/RouteSegmentBase"
-        - $ref: "#/components/schemas/HikingSegmentDetails"
+        - $ref: "#/components/schemas/MountainRideSegmentDetails"
+      nullable: false
 
     MountainRideSegmentDetails:
       type: object
@@ -142,3 +158,4 @@ components:
           format: uri
       required:
         - elevationDifference
+      nullable: false
