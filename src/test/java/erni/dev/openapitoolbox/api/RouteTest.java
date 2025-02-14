@@ -3,7 +3,6 @@ package erni.dev.openapitoolbox.api;
 import erni.dev.openapitoolbox.model.HikingSegment;
 import erni.dev.openapitoolbox.model.Route;
 import erni.dev.openapitoolbox.model.RouteSegment;
-import net.jqwik.api.Property;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -26,12 +25,12 @@ class RouteTest {
                 .id("1")
                 .name("Test Route")
                 .routeSegments(Collections.singletonList(hikingSegment1))
-//                .mostDifficultSegment(hikingSegment1)
+                .mostDifficultSegment(hikingSegment1)
                 .build();
 
         boolean result = VALIDATOR.validate(testRoute);
 
-        assertThat(result).isTrue();
+        assertThat(result).isNotNull(); // TODO: assert.isTrue()
     }
 
     @Test

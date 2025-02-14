@@ -11,16 +11,16 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation(kotlin("test"))
+kotlin {
+    jvmToolchain(21)
 }
 
 tasks.test {
     useJUnitPlatform()
 }
 
-kotlin {
-    jvmToolchain(21)
+tasks.compileJava {
+    dependsOn(tasks.openApiGenerate)
 }
 
 openApiGenerate {
@@ -67,6 +67,7 @@ dependencies {
     implementation("org.openapi4j:openapi-schema-validator:1.0.7")
     implementation("org.openapi4j:openapi-parser:1.0.7")
 
+    testImplementation(kotlin("test"))
 
     testImplementation("net.jqwik:jqwik:1.9.0")
     testImplementation("org.assertj:assertj-core:3.23.1")

@@ -1,11 +1,9 @@
 package erni.dev.openapitoolbox.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.openapi4j.core.exception.EncodeException;
 import org.openapi4j.core.exception.ResolutionException;
 import org.openapi4j.core.validation.ValidationException;
 import org.openapi4j.parser.OpenApi3Parser;
@@ -45,7 +43,7 @@ public class OpenapiValidator {
             SchemaValidator validator = new SchemaValidator(new ValidationContext<>(openApi3.getContext()), null, schemaNode);
             ValidationData<Void> validationData = new ValidationData<>();
             validator.validate(contentNode, validationData);
-            System.out.println(om.writeValueAsString(contentNode));;
+            System.out.println(om.writeValueAsString(contentNode));
             if (!validationData.isValid()) {
                 LOG.info("Validation for Node " + contentNode + " failed with results:\n" + validationData.results());
             }
