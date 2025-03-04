@@ -11,7 +11,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class RouteTest {
 
-    OpenapiValidator VALIDATOR = new OpenapiValidator("C:\\Users\\pfpa\\Code\\openapi-toolbox\\src\\main\\openapi\\hiking-routes-api.yml");
+    OpenapiValidator VALIDATOR = new OpenapiValidator("src/main/openapi/hiking-routes-api.yml");
 
     @Test
     void testRequiredVsNullable() {
